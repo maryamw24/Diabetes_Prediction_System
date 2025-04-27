@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from model import Model
+from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
 # Initialize FastAPI app
@@ -8,6 +9,14 @@ app = FastAPI(title="Diabetes Prediction API")
 
 # Initialize model
 model = Model()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allow frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 # Define input data model using Pydantic
 class DiabetesInput(BaseModel):

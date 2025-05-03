@@ -2,10 +2,11 @@ import joblib
 import pandas as pd
 import numpy as np
 from typing import Tuple
+
 class Model:
     def __init__(self):
         try:
-            self.model = joblib.load('backend/models/random_forest_model.pkl')
+            self.model = joblib.load('models/random_forest_model.pkl')
         except FileNotFoundError:
             raise Exception("Model or scaler file not found. Please train the model first.")
 

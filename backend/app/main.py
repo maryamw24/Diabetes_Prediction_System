@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from model import Model
+from .model import Model
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 

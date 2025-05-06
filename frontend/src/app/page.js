@@ -15,7 +15,7 @@ export default function HomePage() {
         <p className="text-md text-gray-600 mb-8">
           It only takes a few minutes, and your answers could help you take the first step toward a healthier future.
         </p>
-        <Link href="/questionaire"> 
+        <Link href="/questionaire">
           <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full text-lg transition">
             Get Started
           </button>

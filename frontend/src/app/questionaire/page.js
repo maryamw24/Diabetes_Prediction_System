@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ResultDisplay from '../../../components/ResultDisplay';
 
 const questions = [
@@ -10,7 +11,7 @@ const questions = [
   { key: "Polydipsia", question: "Do you feel excessive thirst?", type: "boolean" },
   { key: "sudden_weight_loss", question: "Have you experienced sudden weight loss?", type: "boolean" },
   { key: "weakness", question: "Do you often feel weak?", type: "boolean" },
-  { key: "Polyphagia", question: "Do you feel excessive hunger?", type: "boolean" },
+  { key: "Polyphagia", question: "Do you feel excessive thirst?", type: "boolean" },
   { key: "Genital_thrush", question: "Do you suffer from genital thrush?", type: "boolean" },
   { key: "visual_blurring", question: "Do you experience blurred vision?", type: "boolean" },
   { key: "Itching", question: "Do you experience frequent itching?", type: "boolean" },
@@ -26,15 +27,15 @@ export default function Questionnaire() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
+  const router = useRouter();
 
   const handleAnswer = (value) => {
     const key = questions[currentQuestion].key;
     let booleanValue = value;
-    if(value === "Yes" || value === "No") {
-          booleanValue = value === "Yes" ? 1 : value === "No" ? 0 : value;
-    }
-    else if (value === 'Male' || value === 'Female') {
-          booleanValue = value === "Male" ? 1 : value === "Female" ? 0 : value;
+    if (value === "Yes" || value === "No") {
+      booleanValue = value === "Yes" ? 1 : value === "No" ? 0 : value;
+    } else if (value === 'Male' || value === 'Female') {
+      booleanValue = value === "Male" ? 1 : value === "Female" ? 0 : value;
     }
     setAnswers({ ...answers, [key]: booleanValue });
 
@@ -48,19 +49,26 @@ export default function Questionnaire() {
 
   const submitAnswers = async (finalAnswers) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch("http://localhost:8000/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(finalAnswers),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
-      console.log("Response from server:", data);
+      console.log("Backend Response:", data);
       setResult(data);
     } catch (error) {
       console.error("Error submitting data:", error);
+      setResult({ prediction: "Error", probability: null });
     }
   };
 
@@ -70,7 +78,15 @@ export default function Questionnaire() {
     <div className="flex flex-col items-center justify-center h-screen p-4 bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
         {result ? (
-          <ResultDisplay result={result} />
+          <>
+            <ResultDisplay result={result} />
+            <button
+              onClick={() => router.push('/')}
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Return Home
+            </button>
+          </>
         ) : (
           <>
             <h2 className="text-xl text-black font-semibold mb-4">{question.question}</h2>

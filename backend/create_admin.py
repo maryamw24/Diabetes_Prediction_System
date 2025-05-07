@@ -1,7 +1,9 @@
 import sqlite3
 from app.core.security import get_password_hash
 import logging
+import os
 import time
+from app.db import init_db, DATABASE
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +22,8 @@ def create_admin_user(conn, cursor):
     logger.info("Admin user created: admin@example.com / adminpassword")
 
 
-conn = sqlite3.connect("database.db")
+init_db()
+conn = sqlite3.connect(DATABASE)
 cursor = conn.cursor()
 max_retries = 5
 retry_delay = 2  # seconds

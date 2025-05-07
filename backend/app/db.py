@@ -1,47 +1,51 @@
 import sqlite3
 from datetime import datetime
 import json
+import os
 
-DATABASE = "database.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "database.db")
+
 
 
 def init_db():
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
-
-    # Create users table
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE NOT NULL,
-            hashed_password TEXT NOT NULL,
-            role TEXT DEFAULT 'user',
-            is_verified BOOLEAN DEFAULT 0,
-            is_banned BOOLEAN DEFAULT 0,
-            verification_code TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    print(f"Attempting to initialize database at: {DATABASE}")
+    try:
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                hashed_password TEXT NOT NULL,
+                role TEXT DEFAULT 'user',
+                is_verified BOOLEAN DEFAULT 0,
+                is_banned BOOLEAN DEFAULT 0,
+                verification_code TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+            """
         )
-    """
-    )
-
-    # Create prediction_logs table
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS prediction_logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            input_data TEXT,
-            prediction TEXT,
-            probability REAL,
-            timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS prediction_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                input_data TEXT,
+                prediction TEXT,
+                probability REAL,
+                timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+            """
         )
-    """
-    )
-
-    conn.commit()
-    conn.close()
+        conn.commit()
+        print("Tables created successfully")
+    except sqlite3.Error as e:
+        print(f"Database initialization error: {e}")
+    finally:
+        conn.close()
 
 
 def get_user_by_email(email: str):

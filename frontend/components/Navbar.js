@@ -1,27 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { AuthContext } from '../context/AuthContext';
 
 export default function Navbar() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userRole, setUserRole] = useState(null);
+    const { isLoggedIn, setIsLoggedIn, setUserRole } = useContext(AuthContext);
     const router = useRouter();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                setUserRole(payload.sub); // Assuming role is stored in token
-            } catch (e) {
-                console.error('Error decoding token:', e);
-                setIsLoggedIn(false);
-            }
-        }
-    }, []);
+    
 
     const handleLogout = () => {
         localStorage.removeItem('token');

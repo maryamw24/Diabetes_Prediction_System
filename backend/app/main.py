@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import predict, auth, admin
 from app.db import init_db
+from fastapi.responses import RedirectResponse
+
 
 app = FastAPI(title="Diabetes Prediction API")
 
@@ -16,6 +18,13 @@ app.add_middleware(
 
 # Initialize database
 init_db()
+@app.get("/")
+def root():
+    return RedirectResponse(url="/home")
+
+@app.get("/home")
+def home():
+    return {"message": "Welcome to the Home page"}
 
 # Include routers
 app.include_router(predict.router)

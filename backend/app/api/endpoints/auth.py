@@ -38,6 +38,7 @@ async def signup(user: UserCreate):
 @router.post("/token", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = get_user_by_email(form_data.username)
+
     if not user or not verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -49,10 +50,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if user["is_banned"]:
         raise HTTPException(status_code=403, detail="User is banned")
 
-    access_token_expires = timedelta(minutes=30)
-    access_token = create_access_token(
-        data={"sub": user["email"]}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": user["email"], "role": user["role"]})
     return {"access_token": access_token, "token_type": "bearer", "role": user["role"]}
 
 

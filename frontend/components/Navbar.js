@@ -22,7 +22,7 @@ export default function Navbar() {
         <nav className="bg-blue-600 p-4">
             <div className="container mx-auto flex justify-between items-center">
                 <Link href="/getting-started" className="text-white text-lg font-bold">
-                    Diabetes Prediction System
+                    Diabetes-Prediction-System
                 </Link>
                 <div className="space-x-4">
                     {isLoggedIn ? (
